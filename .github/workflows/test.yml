@@ -83,7 +83,7 @@ jobs:
   
   deploy:
     needs: security
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != ''
     runs-on: ubuntu-latest
     environment: production
     steps:
