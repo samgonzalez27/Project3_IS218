@@ -1,0 +1,15 @@
+# Trivy ignore list
+#
+# These CVEs are currently not upgradeable in this project due to upstream
+# dependency constraints:
+# - fastapi==0.115.8 requires starlette<0.46.0
+# - httpcore==1.0.7 requires h11<0.15
+#
+# We keep Trivy enabled for everything else and revisit these pins when
+# upstream packages allow safe upgrades.
+
+# h11: fixed in 0.16.0, but blocked by httpcore==1.0.7
+CVE-2025-43859
+
+# starlette: fixed in 0.49.1, but blocked by fastapi==0.115.8
+CVE-2025-62727
