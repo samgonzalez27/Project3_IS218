@@ -26,6 +26,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles  # For serving static files (CSS, JS)
 from fastapi.templating import Jinja2Templates  # For HTML templates
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from sqlalchemy.orm import Session  # SQLAlchemy database session
 
@@ -69,6 +70,10 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan  # Pass our lifespan context manager
 )
+
+# Trust proxy headers (X-Forwarded-Proto, X-Forwarded-For) from Caddy
+# This ensures url_for() generates https:// URLs when behind a reverse proxy
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 
 # ------------------------------------------------------------------------------
 # Static Files and Templates Configuration
