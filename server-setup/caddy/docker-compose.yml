@@ -1,0 +1,33 @@
+# =============================================================================
+# Shared Caddy Reverse Proxy Stack
+# =============================================================================
+# Location on server: /opt/caddy/docker-compose.yml
+# This runs the shared Caddy instance that routes to all applications
+# =============================================================================
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: shared-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp" # HTTP/3
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - caddy-net
+
+volumes:
+  caddy-data:
+    driver: local
+  caddy-config:
+    driver: local
+
+networks:
+  caddy-net:
+    name: caddy-net
+    driver: bridge

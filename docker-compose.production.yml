@@ -3,6 +3,9 @@
 # =============================================================================
 # Usage: docker compose -f docker-compose.production.yml up -d
 # =============================================================================
+# NOTE: This stack uses an EXTERNAL shared Caddy reverse proxy.
+#       See /opt/caddy/docker-compose.yml for the shared proxy.
+# =============================================================================
 
 services:
   # ---------------------------------------------------------------------------
@@ -57,28 +60,7 @@ services:
       start_period: 15s
     networks:
       - internal
-      - web
-
-  # ---------------------------------------------------------------------------
-  # Caddy - Reverse Proxy with Automatic HTTPS
-  # ---------------------------------------------------------------------------
-  caddy:
-    image: caddy:2-alpine
-    container_name: calculator-caddy
-    restart: always
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp" # HTTP/3
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy-data:/data
-      - caddy-config:/config
-    depends_on:
-      web:
-        condition: service_healthy
-    networks:
-      - web
+      - caddy-net
 
 # -----------------------------------------------------------------------------
 # Volumes
@@ -86,17 +68,13 @@ services:
 volumes:
   postgres-data:
     driver: local
-  caddy-data:
-    driver: local
-  caddy-config:
-    driver: local
 
 # -----------------------------------------------------------------------------
 # Networks
 # -----------------------------------------------------------------------------
 networks:
-  web:
-    driver: bridge
+  caddy-net:
+    external: true
   internal:
     driver: bridge
     internal: true

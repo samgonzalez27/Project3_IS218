@@ -1,20 +1,20 @@
 # =============================================================================
-# FastAPI Calculator - Caddy Configuration
+# Shared Caddy Configuration - Multi-Domain Reverse Proxy
 # =============================================================================
-# Automatic HTTPS with Let's Encrypt
+# This file is a REFERENCE. The actual Caddyfile used is at /opt/caddy/Caddyfile
+# on the server, which routes BOTH domains:
+#   - NewsDigest domain → news-digest-api / news-digest-frontend
+#   - samgonzalezalberto.me → calculator-api
 # =============================================================================
 
 {
-    # Email for Let's Encrypt certificate notifications
     email admin@samgonzalezalberto.me
 }
 
-# Main domain
+# Calculator API
 samgonzalezalberto.me {
-    # Reverse proxy all requests to the FastAPI container
-    reverse_proxy web:8000
+    reverse_proxy calculator-api:8000
 
-    # Security headers
     header {
         X-Frame-Options "DENY"
         X-Content-Type-Options "nosniff"
@@ -23,17 +23,14 @@ samgonzalezalberto.me {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
-    # Compression
     encode gzip
 
-    # Logging
     log {
         output stdout
         format console
     }
 }
 
-# Redirect www to apex domain
 www.samgonzalezalberto.me {
     redir https://samgonzalezalberto.me{uri} permanent
 }

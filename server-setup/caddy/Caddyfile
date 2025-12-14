@@ -1,0 +1,83 @@
+# =============================================================================
+# Shared Caddy Reverse Proxy - Multi-Domain Configuration
+# =============================================================================
+# Location on server: /opt/caddy/Caddyfile
+# Handles HTTPS for all applications on this droplet
+# =============================================================================
+
+{
+    # Email for Let's Encrypt certificate notifications
+    email admin@samgonzalezalberto.me
+}
+
+# =============================================================================
+# NewsDigest Application (your existing app)
+# =============================================================================
+# Replace YOUR_NEWSDIGEST_DOMAIN with your actual domain
+YOUR_NEWSDIGEST_DOMAIN {
+    # Frontend
+    reverse_proxy news-digest-frontend:80
+
+    # API routes
+    handle /api/* {
+        reverse_proxy news-digest-api:8000
+    }
+
+    handle /health {
+        reverse_proxy news-digest-api:8000
+    }
+
+    handle /docs {
+        reverse_proxy news-digest-api:8000
+    }
+
+    handle /redoc {
+        reverse_proxy news-digest-api:8000
+    }
+
+    handle /openapi.json {
+        reverse_proxy news-digest-api:8000
+    }
+
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    encode gzip
+
+    log {
+        output stdout
+        format console
+    }
+}
+
+# =============================================================================
+# Calculator Application (samgonzalezalberto.me)
+# =============================================================================
+samgonzalezalberto.me {
+    reverse_proxy calculator-api:8000
+
+    header {
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    encode gzip
+
+    log {
+        output stdout
+        format console
+    }
+}
+
+# Redirect www to apex
+www.samgonzalezalberto.me {
+    redir https://samgonzalezalberto.me{uri} permanent
+}
