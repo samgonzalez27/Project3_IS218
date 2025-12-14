@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # Ignore extra env vars (e.g., POSTGRES_USER for db container)
 
 # Create a global settings instance
 settings = Settings()
